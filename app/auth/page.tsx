@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Leaf, ArrowLeft } from 'lucide-react' 
+import { Leaf, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
@@ -13,9 +13,7 @@ export default function AuthPage() {
   const supabase = createClient()
   const router = useRouter()
 
-  // Mode par défaut : connexion
   const [isLogin, setIsLogin] = useState(true)
-  
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -85,7 +83,7 @@ export default function AuthPage() {
       >
         <Link href="/" className="inline-flex items-center text-secondary-600 hover:text-secondary-900 mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour à l'accueil
+          Retour à l&apos;accueil
         </Link>
 
         <div className="bg-white rounded-2xl shadow-soft p-8">
@@ -200,7 +198,7 @@ export default function AuthPage() {
               onClick={() => setIsLogin(!isLogin)}
               className="text-primary-500 hover:text-primary-600 font-medium"
             >
-              {isLogin ? "S'inscrire" : 'Se connecter'}
+              {isLogin ? 'S&apos;inscrire' : 'Se connecter'}
             </button>
           </p>
         </div>

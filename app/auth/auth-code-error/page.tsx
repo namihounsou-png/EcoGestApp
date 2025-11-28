@@ -17,13 +17,18 @@ export default function AuthCodeError() {
               <Leaf className="w-8 h-8 text-red-500" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-secondary-900 mb-4">Erreur d'authentification</h1>
-          <p className="text-secondary-600 mb-6">Une erreur est survenue lors de la validation de votre compte.</p>
+          <h1 className="text-2xl font-bold text-secondary-900 mb-4">Erreur d&apos;authentification</h1>
+          <p className="text-secondary-600 mb-6">
+            Une erreur est survenue lors de la validation de votre compte.
+          </p>
           <div className="bg-red-100 text-red-700 p-4 rounded-lg text-left text-sm font-mono break-words">
-            <strong>Message d'erreur de Supabase:</strong>
+            <strong>Message d&apos;erreur de Supabase:</strong>
             <p className="mt-2">{errorDescription}</p>
           </div>
-          <Link href="/auth" className="mt-8 inline-flex items-center text-primary-500 hover:text-primary-600">
+          <Link
+            href="/auth"
+            className="mt-8 inline-flex items-center text-primary-500 hover:text-primary-600"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retourner à la page de connexion
           </Link>

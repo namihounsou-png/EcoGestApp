@@ -59,7 +59,7 @@ const kpis = [
   {
     label: 'Alertes 90%+',
     value: 8,
-    trend: 'Plan d’action en cours',
+    trend: 'Plan d&apos;action en cours',
     accent: 'from-red-500 to-red-600',
     icon: AlertTriangle,
   },
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
               <p className="text-xs text-secondary-400 uppercase tracking-[0.4em]">Espace administrateur</p>
               <h2 className="text-2xl font-semibold mt-1">Tableau de bord humanisé</h2>
               <p className="text-sm text-secondary-400">
-                Bienvenue ! Les équipes terrain sont à l’écoute de vos décisions stratégiques.
+                Bienvenue ! Les équipes terrain sont à l&apos;écoute de vos décisions stratégiques.
               </p>
             </div>
             <div className="flex items-center space-x-3">
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
                 <div>
                   <h3 className="text-lg font-semibold">Répartition des alertes de remplissage</h3>
                   <p className="text-sm text-secondary-400">
-                    Couleur d’alerte activée dès 80% — priorité aux zones sensibles.
+                    Couleur d&apos;alerte activée dès 80% — priorité aux zones sensibles.
                   </p>
                 </div>
                 <span className="text-xs uppercase tracking-wide text-accent-300">Données live</span>
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
                     dataKey="value"
                     paddingAngle={3}
                   >
-                    {alertesData.map((entry, index) => (
+                    {alertesData.map((entry) => (
                       <Cell key={entry.name} fill={entry.fill} />
                     ))}
                   </Pie>
@@ -258,7 +258,7 @@ export default function AdminDashboard() {
                       <p className="font-medium">{signalement.type}</p>
                       <p className="text-xs text-secondary-400">{signalement.location}</p>
                       <p className="text-xs text-secondary-500 mt-1">
-                        Message envoyé : "Signalement bien reçu ! Merci pour votre vigilance 💚"
+                        Message envoyé : &quot;Signalement bien reçu ! Merci pour votre vigilance 💚&quot;
                       </p>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -280,12 +280,12 @@ export default function AdminDashboard() {
               <div className="space-y-4 flex-1">
                 <div className="border border-secondary-800 rounded-xl p-4">
                   <p className="text-sm text-secondary-300 mb-1">SGDS-GN</p>
-                  <p className="font-semibold">"Mission accomplie ! Le quartier Saint-Jean est redevenu respirable."</p>
+                  <p className="font-semibold">&quot;Mission accomplie ! Le quartier Saint-Jean est redevenu respirable.&quot;</p>
                   <p className="text-xs text-secondary-500 mt-2">Coordination locale • 09:12</p>
                 </div>
                 <div className="border border-secondary-800 rounded-xl p-4">
                   <p className="text-sm text-secondary-300 mb-1">ANASAP</p>
-                  <p className="font-semibold">"Nouvelle tournée solidaire prévue demain avec les associations du littoral."</p>
+                  <p className="font-semibold">&quot;Nouvelle tournée solidaire prévue demain avec les associations du littoral.&quot;</p>
                   <p className="text-xs text-secondary-500 mt-2">Direction générale • 07:48</p>
                 </div>
               </div>

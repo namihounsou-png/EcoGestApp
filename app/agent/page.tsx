@@ -48,7 +48,7 @@ export default function AgentDashboard() {
             <div>
               <h1 className="text-xl font-semibold text-secondary-900">Ma Tournée Humanisée</h1>
               <p className="text-sm text-secondary-500">
-                SGDS-GN • Lomé & Cotonou — Merci pour votre mission du jour 💪
+                SGDS-GN &amp; Lomé &amp; Cotonou — Merci pour votre mission du jour 💪
               </p>
             </div>
             <div className="flex items-center space-x-3">
@@ -78,7 +78,7 @@ export default function AgentDashboard() {
                 <p className="text-sm uppercase tracking-wide text-primary-100 mb-1">Briefing de la matinée</p>
                 <h2 className="text-2xl font-semibold">12 points clés - Tournée ANASAP</h2>
                 <p className="text-sm text-secondary-100">
-                  Anne, superviseuse SGDS-GN : "Merci pour votre énergie, nous sommes derrière vous."
+                  Anne, superviseuse SGDS-GN : &quot;Merci pour votre énergie, nous sommes derrière vous.&quot;
                 </p>
               </div>
             </div>
@@ -104,7 +104,7 @@ export default function AgentDashboard() {
               </div>
               <div className="text-6xl">🚛</div>
             </div>
-            
+
             {/* Barre de progression */}
             <div className="w-full bg-primary-400 rounded-full h-3 mb-4">
               <motion.div
@@ -265,7 +265,7 @@ export default function AgentDashboard() {
         <div className="mt-6 flex items-center space-x-3 text-secondary-500 text-sm">
           <Smile className="w-5 h-5 text-primary-500" />
           <p>
-            SGDS-GN & ANASAP enregistrent vos réussites pour inspirer les autres équipes. Mission après mission, vous faites bouger la ville.
+            SGDS-GN &amp; ANASAP enregistrent vos réussites pour inspirer les autres équipes. Mission après mission, vous faites bouger la ville.
           </p>
         </div>
       </main>
