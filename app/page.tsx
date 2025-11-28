@@ -40,7 +40,6 @@ export default function LandingPage() {
     },
   ]
 
-  // Slider automatique toutes les 5 secondes
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length)
@@ -143,7 +142,7 @@ export default function LandingPage() {
             </Link>
             <Link href="/auth?mode=signup">
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                S&apos;inscrire
+                S'inscrire
               </Button>
             </Link>
           </div>

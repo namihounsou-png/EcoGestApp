@@ -1,60 +1,56 @@
 'use server'
+import { createClient } from '@/lib/supabase/client'
 
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-
-function createSupabaseServerClient() {
-    const cookieStore = cookies()
-    return createServerClient(
-        process.env.SUPABASE_URL!,
-        process.env.SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                get: (name: string) => cookieStore.get(name)?.value,
-                set: (name: string, value: string, options: any) => cookieStore.set({ name, value, ...options }),
-                remove: (name: string, options: any) => cookieStore.delete({ name, ...options }),
-            },
-        }
-    )
-}
+const supabase = createClient()
 
 export async function updateAvatar(formData: FormData) {
-    try {
-        const supabase = createSupabaseServerClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) throw new Error('Utilisateur non authentifié')
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Utilisateur non connecté.')
 
-        const avatarFile = formData.get('avatar') as File
-        if (!avatarFile) throw new Error("Aucun fichier n'a été fourni.")
+    const file = formData.get('avatar') as File
+    if (!file) throw new Error('Fichier manquant.')
 
-        const filePath = `${user.id}/avatar`
-        const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, avatarFile, { upsert: true })
-        if (uploadError) throw uploadError
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${user.id}.${fileExt}`
+    const filePath = `avatars/${fileName}`
 
-        const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath)
+    // Upload dans Storage
+    const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true })
+    if (uploadError) throw uploadError
 
-        const { error: updateError } = await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', user.id)
-        if (updateError) throw updateError
+    // Obtenir URL publique
+    const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filePath)
 
-        return { success: true, avatar_url: publicUrl }
-    } catch (error: any) {
-        return { success: false, error: error.message }
-    }
+    // Mettre à jour la table profiles
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ avatar_url: publicURL })
+      .eq('id', user.id)
+
+    if (updateError) throw updateError
+
+    return { success: true, avatar_url: publicURL }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
 }
 
-export async function updateName(fullName: string) {
-    try {
-        const supabase = createSupabaseServerClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) throw new Error('Utilisateur non authentifié')
+export async function updateName(full_name: string) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Utilisateur non connecté.')
 
-        if (!fullName || fullName.trim().length < 2) throw new Error('Le nom doit contenir au moins 2 caractères.')
+    const { error } = await supabase
+      .from('profiles')
+      .update({ full_name })
+      .eq('id', user.id)
 
-        const { error } = await supabase.from('profiles').update({ full_name: fullName }).eq('id', user.id)
-        if (error) throw error
+    if (error) throw error
 
-        return { success: true }
-    } catch (error: any) {
-        return { success: false, error: error.message }
-    }
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
 }
+

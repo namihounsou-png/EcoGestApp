@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, User, LogOut, Camera, Save } from 'lucide-react'
@@ -12,14 +11,13 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { updateAvatar, updateName } from './actions'
 
 interface Profile {
-  full_name: string | null;
-  avatar_url: string | null;
+  full_name: string | null
+  avatar_url: string | null
 }
 
 export default function ProfilPage() {
   const supabase = createClient()
   const router = useRouter()
-
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [fullName, setFullName] = useState('')
@@ -27,11 +25,10 @@ export default function ProfilPage() {
   const [isUploading, setIsUploading] = useState(false)
   const [isSavingName, setIsSavingName] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         setLoading(false)
@@ -43,64 +40,47 @@ export default function ProfilPage() {
         .from('profiles')
         .select('full_name, avatar_url')
         .eq('id', user.id)
-        .limit(1)
         .single()
 
-      if (error && error.code !== 'PGRST116') {
-          setError("Impossible de charger le profil.")
-      } else if (data) {
+      if (error && error.code !== 'PGRST116') setError('Impossible de charger le profil.')
+      if (data) {
         setProfile(data)
         setFullName(data.full_name || '')
       }
-
       setLoading(false)
     }
-    fetchUserData()
-  }, [supabase])
+    fetchProfile()
+  }, [])
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !user) return
-
     setIsUploading(true)
     setError(null)
-
     const formData = new FormData()
     formData.append('avatar', file)
-
-    try {
-      const result = await updateAvatar(formData)
-      if (result.success && result.avatar_url) {
-        setProfile(prev => prev ? { ...prev, avatar_url: result.avatar_url } : { full_name, avatar_url: result.avatar_url })
-        alert("Avatar mis à jour !")
-      } else {
-        setError(result.error || "Erreur lors du changement d'avatar.")
-      }
-    } catch {
-      setError("Erreur lors du changement d'avatar.")
-    } finally {
-      setIsUploading(false)
+    const result = await updateAvatar(formData)
+    if (result.success && result.avatar_url) {
+      setProfile(prev => prev ? { ...prev, avatar_url: result.avatar_url } : { full_name, avatar_url: result.avatar_url })
+      alert('Avatar mis à jour !')
+    } else {
+      setError(result.error || 'Erreur lors du changement d\'avatar.')
     }
+    setIsUploading(false)
   }
 
   const handleNameUpdate = async () => {
-    if (!fullName.trim()) return alert("Le nom ne peut pas être vide.")
+    if (!fullName.trim()) return alert('Le nom ne peut pas être vide.')
     setIsSavingName(true)
     setError(null)
-
-    try {
-      const result = await updateName(fullName)
-      if (result.success) {
-        setProfile(prev => prev ? { ...prev, full_name: fullName } : { full_name, avatar_url: null })
-        alert("Nom mis à jour !")
-      } else {
-        setError(result.error || "Erreur lors de la mise à jour du nom.")
-      }
-    } catch {
-      setError("Erreur lors de la mise à jour du nom.")
-    } finally {
-      setIsSavingName(false)
+    const result = await updateName(fullName)
+    if (result.success) {
+      setProfile(prev => prev ? { ...prev, full_name: fullName } : { full_name, avatar_url: null })
+      alert('Nom mis à jour !')
+    } else {
+      setError(result.error || 'Erreur lors de la mise à jour du nom.')
     }
+    setIsSavingName(false)
   }
 
   const handleLogout = async () => {
@@ -114,10 +94,10 @@ export default function ProfilPage() {
     <div className="min-h-screen bg-secondary-50">
       <header className="bg-white shadow-sm py-4 px-4">
         <div className="container mx-auto">
-            <Link href="/citoyen" className="inline-flex items-center text-secondary-600 hover:text-secondary-900">
-              <ArrowLeft className="w-4 h-4 mr-2" />Retour
-            </Link>
-            <h1 className="text-3xl font-bold text-secondary-900 mt-2">Mon Profil</h1>
+          <Link href="/citoyen" className="inline-flex items-center text-secondary-600 hover:text-secondary-900">
+            <ArrowLeft className="w-4 h-4 mr-2" />Retour
+          </Link>
+          <h1 className="text-3xl font-bold text-secondary-900 mt-2">Mon Profil</h1>
         </div>
       </header>
 
@@ -127,7 +107,7 @@ export default function ProfilPage() {
 
           {/* Avatar */}
           <div className="flex flex-col items-center space-y-4">
-            <input type="file" ref={fileInputRef} onChange={handleAvatarChange} className="hidden" accept="image/*" />
+            <input type="file" ref={fileInputRef} onChange={handleAvatarChange} className="hidden" accept="image/*"/>
             <div className="relative">
               <div className="w-32 h-32 bg-secondary-200 rounded-full flex items-center justify-center overflow-hidden">
                 {profile?.avatar_url ? (
@@ -136,11 +116,8 @@ export default function ProfilPage() {
                   <User className="w-16 h-16 text-secondary-400"/>
                 )}
               </div>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-0 right-0 bg-primary-500 text-white p-3 rounded-full shadow-lg"
-                disabled={isUploading}>
-                {isUploading ? "..." : <Camera className="w-5 h-5"/>}
+              <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-0 right-0 bg-primary-500 text-white p-3 rounded-full shadow-lg" disabled={isUploading}>
+                {isUploading ? '...' : <Camera className="w-5 h-5"/>}
               </button>
             </div>
           </div>
@@ -156,7 +133,6 @@ export default function ProfilPage() {
 
           <div className="border-t w-full my-6"></div>
 
-          {/* Déconnexion */}
           <Button onClick={handleLogout} variant="destructive" className="w-full max-w-xs">
             <LogOut className="w-4 h-4 mr-2"/>Se déconnecter
           </Button>
@@ -165,3 +141,4 @@ export default function ProfilPage() {
     </div>
   )
 }
+

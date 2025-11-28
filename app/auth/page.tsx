@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/client'
 export default function AuthPage() {
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [isLogin, setIsLogin] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -22,49 +23,58 @@ export default function AuthPage() {
     confirmPassword: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [infoMessage, setInfoMessage] = useState<string>('')
+
+  useEffect(() => {
+    const mode = searchParams.get('mode')
+    setIsLogin(mode !== 'signup')
+
+    if (searchParams.get('confirmed') === 'true') {
+      setInfoMessage('✅ Votre compte a été confirmé ! Connectez-vous.')
+    } else {
+      setInfoMessage('')
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setErrors({})
+    setInfoMessage('')
 
     if (isLogin) {
-      // Connexion
       const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       })
 
-      if (error) {
-        setErrors({ api: error.message })
-      } else {
-        router.refresh()
-      }
-
+      if (error) setErrors({ api: error.message })
+      else router.refresh()
     } else {
-      // Inscription
       if (formData.password !== formData.confirmPassword) {
         setErrors({ confirmPassword: 'Les mots de passe ne correspondent pas.' })
         setIsSubmitting(false)
         return
       }
 
+      // ✅ IMPORTANT : on enregistre bien "full_name" dans user_metadata
       const { error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: { full_name: formData.name, role: 'citoyen' },
+          data: {
+            full_name: formData.name,  // ⬅️ Nom bien enregistré
+            role: 'citoyen',
+            avatar_url: null          // ⬅️ Pas de photo exigée à l’inscription
+          },
         },
       })
 
-      if (error) {
-        setErrors({ api: error.message })
-      } else {
-        setErrors({
-          api: 'Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.'
-        })
-      }
+      if (error) setErrors({ api: error.message })
+      else setErrors({
+        api: 'Inscription réussie ! Vérifiez votre email pour confirmer votre compte.'
+      })
     }
 
     setIsSubmitting(false)
@@ -74,16 +84,16 @@ export default function AuthPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
+  const switchMode = () => {
+    const newMode = isLogin ? 'signup' : 'login'
+    router.push(`/auth?mode=${newMode}`)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <Link href="/" className="inline-flex items-center text-secondary-600 hover:text-secondary-900 mb-6">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour à l&apos;accueil
+          <ArrowLeft className="w-4 h-4 mr-2" /> Retour à l'accueil
         </Link>
 
         <div className="bg-white rounded-2xl shadow-soft p-8">
@@ -98,24 +108,21 @@ export default function AuthPage() {
           </h1>
 
           <p className="text-center text-secondary-600 mb-8">
-            {isLogin
-              ? 'Connectez-vous pour continuer'
-              : 'Rejoignez la communauté EcoGest'}
+            {isLogin ? 'Connectez-vous pour continuer' : 'Rejoignez la communauté EcoGest'}
           </p>
 
+          {infoMessage && (
+            <div className="bg-green-100 text-green-700 px-4 py-3 rounded mb-4">
+              {infoMessage}
+            </div>
+          )}
+
           {errors.api && (
-            <div
-              className={`${
-                errors.api.startsWith('Inscription')
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700'
-              } px-4 py-3 rounded relative mb-4`}
-            >
+            <div className="px-4 py-3 rounded mb-4 bg-red-100 text-red-700">
               <span>{errors.api}</span>
             </div>
           )}
 
-          {/* FORMULAIRE */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <Input
@@ -125,80 +132,31 @@ export default function AuthPage() {
                 placeholder="Jean Dupont"
                 value={formData.name}
                 onChange={handleChange}
-                error={errors.name}
               />
             )}
 
-            <Input
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="jean.dupont@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              error={errors.email}
-            />
-
-            <Input
-              label="Mot de passe"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-            />
+            <Input label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
+            <Input label="Mot de passe" name="password" type="password" value={formData.password} onChange={handleChange} />
 
             {!isLogin && (
               <Input
                 label="Confirmer le mot de passe"
                 name="confirmPassword"
                 type="password"
-                placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                error={errors.confirmPassword}
               />
             )}
 
-            <Button
-              type="submit"
-              className="w-full"
-              size="lg"
-              disabled={isSubmitting}
-            >
-              {isSubmitting
-                ? isLogin
-                  ? 'Connexion...'
-                  : 'Création...'
-                : isLogin
-                  ? 'Se connecter'
-                  : 'Créer mon compte'}
+            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? (isLogin ? 'Connexion...' : 'Création...') : (isLogin ? 'Se connecter' : 'Créer mon compte')}
             </Button>
           </form>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-secondary-200"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-secondary-500">ou</span>
-            </div>
-          </div>
-
-          <Button variant="outline" className="w-full" disabled={isSubmitting}>
-            Continuer avec Google
-          </Button>
-
-          {/* SWITCH LOGIN / SIGNUP */}
           <p className="mt-6 text-center text-sm text-secondary-600">
             {isLogin ? 'Pas encore de compte ? ' : 'Déjà un compte ? '}
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-primary-500 hover:text-primary-600 font-medium"
-            >
-              {isLogin ? 'S&apos;inscrire' : 'Se connecter'}
+            <button type="button" onClick={switchMode} className="text-primary-500 hover:text-primary-600 font-medium">
+              {isLogin ? 'Inscris-toi' : 'Se connecter'}
             </button>
           </p>
         </div>
