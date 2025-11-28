@@ -66,7 +66,7 @@ export default function NotificationsPage() {
                 <Bell className="w-10 h-10 text-primary-400" />
             </div>
             <h2 className="text-xl font-semibold text-secondary-800">Aucune notification pour le moment</h2>
-            <p className="text-secondary-500 mt-2">Vos notifications apparaîtront ici dès qu'il y aura du nouveau.</p>
+            <p className="text-secondary-500 mt-2">Vos notifications apparaîtront ici dès qu&apos;il y aura du nouveau.</p>
           </div>
         ) : (
           <div className="space-y-4">
