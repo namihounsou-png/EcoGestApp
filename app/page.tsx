@@ -24,7 +24,7 @@ export default function LandingPage() {
       title: 'Signalez en un instant',
       subtitle: 'Chaque photo accélère une intervention',
       description:
-        "Un signalement, c'est un quartier qui respire mieux. Partagez ce que vous voyez, nous nous chargeons du reste.",
+        "Un signalement, c&apos;est un quartier qui respire mieux. Partagez ce que vous voyez, nous nous chargeons du reste.",
       image:
         'https://images.unsplash.com/photo-1461532257246-777de18cd58b?auto=format&fit=crop&w=1200&q=80',
       badge: 'Signalement chaleureux',
@@ -118,7 +118,7 @@ export default function LandingPage() {
               <Users className="w-12 h-12 text-primary-500 mx-auto mb-4" />
               <h3 className="font-semibold text-secondary-900 mb-2">Pour les Citoyens</h3>
               <p className="text-sm text-secondary-600">
-                "Je l'ai signalé ce matin, la rue respire déjà !" — gardez un lien direct avec votre commune.
+                &quot;Je l&apos;ai signalé ce matin, la rue respire déjà !&quot; — gardez un lien direct avec votre commune.
               </p>
             </motion.div>
 
@@ -164,7 +164,7 @@ export default function LandingPage() {
             </Link>
             <Link href="/auth?mode=signup">
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                S'inscrire
+                S&apos;inscrire
               </Button>
             </Link>
           </motion.div>
@@ -183,5 +183,3 @@ export default function LandingPage() {
     </div>
   )
 }
-
-
